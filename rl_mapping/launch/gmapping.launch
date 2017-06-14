@@ -1,0 +1,15 @@
+<launch>
+  <include file="$(find rl_robot)/launch/robot_laser.launch" />
+  
+
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen" >
+    <param name="base_frame" value="/base_link"/>
+    <param name="odom_frame" value="/odom"/>
+    <remap from="scan" to="/laser_scan"/>
+
+    <param name="maxRange" value="6.0"/>
+
+    <param name="linearUpdate" value="0.25"/>
+    <param name="angularUpdate" value="0.125"/>
+  </node>
+</launch>

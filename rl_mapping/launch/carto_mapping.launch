@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find rl_robot)/launch/robot_laser.launch" />
+  <include file="$(find cartographer_ros)/launch/carto_mapping_2d.launch" />
+</launch>

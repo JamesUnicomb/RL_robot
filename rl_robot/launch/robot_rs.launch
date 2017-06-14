@@ -1,0 +1,10 @@
+<launch>
+  <include file="$(find rl_robot)/launch/include/r200_nodelet_multiple_cameras.launch" />
+  <node pkg="tf" type="static_transform_publisher" name="camera1_link_transform" args="0.1  0.1  0.1  0.5236  0.0  0.0 /base_link /camera1_link 30"/>
+  <node pkg="tf" type="static_transform_publisher" name="camera2_link_transform" args="0.1 -0.1  0.1  0.5236  0.0  0.0 /base_link /camera2_link 30"/>
+
+  <include file="$(find rl_robot)/launch/include/gyro_launch.launch" />
+  <node pkg="tf" type="static_transform_publisher" name="imu_link_transform" args="0.0 0.0  0.0  0.0  0.0  0.0 /base_link /imu_link 30"/>
+
+  <include file="$(find rl_robot)/launch/include/create_2.launch" />
+</launch>

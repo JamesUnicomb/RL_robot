@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="um7" type="um7_driver" name="imu_driver">
+    <param name="_port" value="/dev/um7"/>
+    <param name="zero_gyros" value="true"/>
+  </node>
+</launch>

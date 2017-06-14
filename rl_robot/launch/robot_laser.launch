@@ -1,0 +1,15 @@
+<launch>
+  <!-- run the lidar -->
+  <include file="$(find rl_robot)/launch/include/rplidar.launch" />
+  <node pkg="tf" type="static_transform_publisher" name="laser_link_transform" args="0.08 0.0  0.15  3.1416  0.0  0.0 /base_link /laser 30"/>
+
+  <!-- run the um7 imu -->
+  <include file="$(find rl_robot)/launch/include/gyro_launch.launch" />
+  <node pkg="tf" type="static_transform_publisher" name="imu_link_transform" args="0.0 0.0  0.0  0.0  0.0  0.0 /base_link /imu_link 30"/>
+
+  <!-- run the create base -->
+  <include file="$(find rl_robot)/launch/include/create_2.launch" />
+
+  <!-- run the robot ekf for filtered odometry -->
+  <include file="$(find rl_robot)/launch/include/rl_robot_ekf.launch" />
+</launch>

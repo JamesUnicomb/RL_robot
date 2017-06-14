@@ -1,0 +1,15 @@
+<launch>
+  <include file="$(find rl_robot)/launch/robot_laser.launch" />
+
+  <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
+    <param name="base_frame" value="base_link"/>
+    <param name="odom_frame" value="/odom"/>
+    
+    <remap from="scan" to="/laser_scan"/>
+
+    <param name="map_resolution" value="0.05"/>
+    <param name="map_size" value="4000"/>
+
+    <param name="maxRange" value="6.0"/>
+  </node>
+</launch>
