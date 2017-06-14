@@ -1,0 +1,13 @@
+<launch>
+  <!-- launch the robot base -->
+  <include file="$(find rl_robot)/launch/include/create_minimal_launch.launch" />
+
+  <!-- launch the depth camera -->
+  <include file="$(find openni2_launch)/launch/openni2.launch" />
+  <node pkg="tf" type="static_transform_publisher" name="camera_link_transform" args="0.1 0 0.1 0 0 3.1416 /base_link /camera_link 30"/>
+
+  <!-- launch a scan from depth_image -->
+  <node name="depthimage_to_laserscan" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" > 
+    <remap from="image" to="/camera/depth/image_raw"/>
+  </node>
+</launch>

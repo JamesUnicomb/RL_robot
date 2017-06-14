@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="velocity_smoother" type="velocity_smoother.py" name="cmd_vel_smoother">
+    <param name="accel_lim_x" value="0.1" />
+    <param name="accel_lim_w" value="0.1" />
+  </node>
+</launch>

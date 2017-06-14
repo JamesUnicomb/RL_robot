@@ -6,9 +6,7 @@
     <rosparam command="load" file="$(arg config)" />
     <param name="robot_model" value="CREATE_2" />
     <param name="dev" value="/dev/create" />
-    <param name="publish_tf" value="false" />
-    <remap from="cmd_vel" to="cmd_vel" />
-    <remap from="odom" to="create/odom" />
+    <param name="publish_tf" value="true" />
   </node>
 
   <!-- Robot description -->
