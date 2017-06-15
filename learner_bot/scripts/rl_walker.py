@@ -21,12 +21,12 @@ reset_pub = rospy.Publisher('create/reset', Float64, queue_size=2)
 rospack = rospkg.RosPack()
 pkg_path = rospack.get_path('learner_bot')
 
-n_inputs = 80
-n_hidden1 = 64
-n_hidden2 = 32
+n_inputs = 160
+n_hidden1 = 128
+n_hidden2 = 64
 n_outputs = 3
 
-learning_rate = 0.1
+learning_rate = 0.05
 
 initializer = tf.contrib.layers.variance_scaling_initializer()
 
@@ -34,7 +34,7 @@ X = tf.placeholder(tf.float32, shape=[None, n_inputs])
 
 hidden1 = fully_connected(X, n_hidden1, activation_fn=tf.nn.relu, weights_initializer=initializer)
 hidden2 = fully_connected(hidden1, n_hidden2, activation_fn=tf.nn.relu, weights_initializer=initializer)
-logits = fully_connected(hidden2, n_outputs, activation_fn=tf.nn.relu)
+logits = fully_connected(hidden2, n_outputs, activation_fn=tf.nn.relu) + tf.to_float([1.0, 0.0, 0.0])
 probs = tf.nn.softmax(logits)
 action = tf.multinomial(logits, num_samples=1)
 y = tf.to_float(probs)
@@ -70,21 +70,19 @@ def discount_and_normalize_rewards(all_rewards, discount_rate):
     return [(discounted_rewards - reward_mean)/reward_std for discounted_rewards in all_discounted_rewards]
 
 def vel_from_int(input):
-    lin_vel = 0.0
+    lin_vel = 0.2
     ang_vel = 0.0
-    if input==0:
-        lin_vel = 0.2
-    elif input==1:
-        ang_vel = -0.8
+    if input==1:
+        ang_vel = -1.5
     elif input==2:
-        ang_vel = 0.8
+        ang_vel = 1.5
     return lin_vel, ang_vel
 
-n_games_per_update = 10
-n_max_steps = 60
+n_games_per_update = 5
+n_max_steps = 600
 n_iterations = 250
 save_iterations = 3
-discount_rate = 0.9
+discount_rate = 0.95
 
 def main():
     rate = rospy.Rate(10)
@@ -98,13 +96,13 @@ def main():
             for game in range(n_games_per_update):
                 current_rewards = []
                 current_gradients = []
-                #create.random_walkler(10.0)
+                create.random_walker(5.0)
                 step = 0
                 robot_feedback = False
                 obs = robot_data.laser_array
                 while (step<n_max_steps)and(not robot_feedback):
                     action_val, gradients_val = sess.run([action, gradients], feed_dict={X: obs.reshape(1, n_inputs)})
-                    action_int = np.argmax(action_val)
+                    action_int = action_val[0]
 
                     lin_vel, ang_vel = vel_from_int(action_int)
 

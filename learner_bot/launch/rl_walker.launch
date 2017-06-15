@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find rl_robot)/launch/robot_minimal.launch" />
+  <node pkg="learner_bot" type="rl_walker.py" name="rl_walker" />
+</launch>

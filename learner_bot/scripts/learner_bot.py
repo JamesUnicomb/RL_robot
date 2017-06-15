@@ -35,7 +35,7 @@ class RLData:
 
 
     def laser_cb(self, laser):
-        ranges = np.array(laser.ranges)[1::8]
+        ranges = np.array(laser.ranges)[1::4]
         ranges[ranges == np.nan] = 0.0
         self.laser_array = ranges
 
