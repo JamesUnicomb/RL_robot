@@ -1,4 +1,8 @@
 <launch>
-  <include file="$(find rl_robot)/launch/robot_laser.launch" />
+  <arg name="map_online" default="true" />
+
+  <group if="$(arg map_online)" >
+    <include file="$(find rl_robot)/launch/robot_laser.launch" />
+  </group>
   <include file="$(find cartographer_ros)/launch/carto_mapping_2d.launch" />
 </launch>

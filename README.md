@@ -29,6 +29,20 @@ roslaunch rl_mapping carto_mapping.launch
 [![Watch the video](https://github.com/JamesUnicomb/rl_robot/blob/master/video_clipping_mapping.png)](https://www.youtube.com/watch?v=EqAxq1zT4jE)
 Video Link: https://www.youtube.com/watch?v=EqAxq1zT4jE
 
+With a pre-recorded rosbag of a robot driving around an environment, mapping can be done with this data by the commands in two seperate terminals:
+```
+roslaunch rl_mapping carto_mapping.launch map_online:=false
+rosbag play /path/to/bagfile/file.bag
+```
+
+Alternative mapping packages include, gmapping and hector_mapping:
+```
+roslaunch rl_mapping gmapping.launch
+```
+```
+roslaunch rl_mapping hector_mapping.launch
+```
+
 
 ## Robot Navigation
 ### rl_navigation
