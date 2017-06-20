@@ -5,7 +5,7 @@
   <arg name="map_keepout_file" default="$(find rl_navigation)/maps/flat_map_keepout.yaml" />
   <arg name="use_keepout" default="true" /> 
 
-  <arg name="move_base_include" default="$(find rl_navigation)/launch/include/move_base.launch" />
+  <arg name="move_base_include" default="$(find rl_navigation)/launch/include/move_base_flat.launch" />
   <arg name="amcl_include" default="$(find rl_navigation)/launch/include/amcl.launch" />
 
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
