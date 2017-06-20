@@ -22,6 +22,9 @@ launches the realsense, imu and create drivers.
 ## Robot Mapping
 ### rl_mapping
 The video below shows google cartographer mapping a floor.
+```
+roslaunch rl_mapping carto_mapping.launch
+```
 
 [![Watch the video](https://github.com/JamesUnicomb/rl_robot/blob/master/video_clipping_mapping.png)](https://www.youtube.com/watch?v=EqAxq1zT4jE)
 Video Link: https://www.youtube.com/watch?v=EqAxq1zT4jE
@@ -30,11 +33,17 @@ Video Link: https://www.youtube.com/watch?v=EqAxq1zT4jE
 ## Robot Navigation
 ### rl_navigation
 #### Navigation in a static home environment
+```
+roslaunch rl_navigation flat.launch
+```
+
 [![Watch the video](https://github.com/JamesUnicomb/rl_robot/blob/master/video_clipping_navigation.png)](https://www.youtube.com/watch?v=eP6TwM0xmTs)
 Video Link: https://www.youtube.com/watch?v=eP6TwM0xmTs
 
 #### Navigation in a static maze
-
+```
+roslaunch rl_navigation maze.launch
+```
 
 
 ## Path Following with Neural Networks
