@@ -1,6 +1,23 @@
 # rl_robot
 RL_Robot Base Code.
 
+### rl_robot
+This puts the drivers of the robot into several launch files.
+
+```
+roslaunch rl_robot robot_minimal.launch
+```
+launches the camera and create drivers.
+
+```
+roslaunch rl_robot robot_laser.launch 
+```
+launches the rplidar, imu and create drivers. This will also run the ekf between the imu and the odometry.
+
+```
+roslaunch rl_robot robot_rs.launch
+```
+launches the realsense, imu and create drivers.
 
 ## Robot Mapping
 ### rl_mapping
