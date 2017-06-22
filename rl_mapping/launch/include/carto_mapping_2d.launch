@@ -1,0 +1,10 @@
+<launch>
+  <node name="cartographer_node" pkg="cartographer_ros" type="cartographer_node" args="
+          -configuration_directory $(find rl_mapping)/launch/configuration_files
+          -configuration_basename rl_robot.lua"
+      output="screen">
+    <remap from="scan"     to="/laser_scan" />
+    <remap from="odom"     to="/odometry/filtered" />
+    <remap from="imu"      to="/imu/data" />
+  </node>
+</launch>
