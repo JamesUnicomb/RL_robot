@@ -1,0 +1,8 @@
+from rl_path_follow import PathFollow
+
+def main():
+    pf = PathFollow(load_model = False)
+
+
+if __name__=='__main__':
+    main()
