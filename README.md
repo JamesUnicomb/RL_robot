@@ -63,8 +63,16 @@ roslaunch rl_navigation maze.launch
 ## Path Following with Neural Networks
 This package uses tensorflow or theano to use recorded data to train a neural network to estimate the turning radius of a robot.
 
-The following video shows the training data sets.
+The following video shows the training data set along with the trained neural network output.
+
+[![Watch the video](https://github.com/JamesUnicomb/rl_robot/blob/master/nn_control1.png)](https://www.youtube.com/watch?v=hoHlfk9FW_M)
+Video Link: https://www.youtube.com/watch?v=hoHlfk9FW_M
 
 Once the training has been completed we test how well the neural network predicts the turning radius of someone driving the robot along an unseen track.
 
-Finally, the video below shows the robot driving along a track autonomously.
+Its important to note that the network will not match the human control perfectly as the human control will be jolty. 
+
+[![Watch the video](https://github.com/JamesUnicomb/rl_robot/blob/master/nn_control2.png)](https://www.youtube.com/watch?v=J_xf4Yv39JY)
+Video Link: https://www.youtube.com/watch?v=J_xf4Yv39JY
+
+Finally, the video below shows the robot driving along a track autonomously. TBA
