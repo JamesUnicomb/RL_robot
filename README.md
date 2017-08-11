@@ -65,7 +65,7 @@ This package uses tensorflow or theano to use recorded data to train a neural ne
 
 The following video shows the training data set along with the trained neural network output.
 
-[![Watch the video]((https://github.com/JamesUnicomb/rl_robot/blob/master/nn_control1.png)|width=100)](https://www.youtube.com/watch?v=hoHlfk9FW_M)
+[![Watch the video](https://github.com/JamesUnicomb/rl_robot/blob/master/nn_control1.png){:height="50%" width="50%"}](https://www.youtube.com/watch?v=hoHlfk9FW_M)
 Video Link: https://www.youtube.com/watch?v=hoHlfk9FW_M
 
 Once the training has been completed we test how well the neural network predicts the turning radius of someone driving the robot along an unseen track.
