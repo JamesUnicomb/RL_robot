@@ -1,12 +1,15 @@
 <launch>
-  <include file="$(find rl_robot)/launch/robot_laser.launch" />
+  <arg name="robot_launch_file" value="$(find rl_robot)/launch/robot_laser.launch" />
+
+  <include file="$(arg robot_launch_file)" />
 
   <arg name="map_file" default="$(find rl_navigation)/maps/flat_map.yaml" />
   <arg name="map_keepout_file" default="$(find rl_navigation)/maps/flat_map_keepout.yaml" />
-  <arg name="use_keepout" default="true" /> 
+  <arg name="use_keepout" default="true" />
 
   <arg name="move_base_include" default="$(find rl_navigation)/launch/include/move_base_flat.launch" />
   <arg name="amcl_include" default="$(find rl_navigation)/launch/include/amcl.launch" />
+  <arg name="obstacles_include" default="$(find rl_navigation)/launch/include/obstacles.launch" />
 
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
