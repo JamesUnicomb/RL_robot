@@ -10,7 +10,14 @@ import cv2
 
 from cv_bridge import CvBridge, CvBridgeError
 
-import tensorflow as tf
+import theano
+import theano.tensor as T
+
+import lasagne
+from lasagne.updates import nesterov_momentum
+from lasagne.layers import Conv2DLayer, MaxPool2DLayer, DenseLayer, InputLayer, get_output
+from lasagne.nonlinearities import rectify, softmax, tanh
+from lasagne.objectives import squared_error
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
@@ -19,22 +26,17 @@ import scipy.io as io
 
 class PathFollow:
     def __init__(self,
-                 load_model    = True,
-                 record_data   = True,
+                 load_model    = False,
+                 record_data   = False,
                  is_training   = False,
-                 n_filter_1    = 8,
-                 filter_size_1 = 5,
-                 pool_size_1   = 3,
-                 n_filter_2    = 16,
-                 filter_size_2 = 3,
-                 pool_size_2   = 2,
-                 n_hidden_1    = 100,
-                 n_hidden_2    = 50,
                  max_lin_vel   = 0.5,
-                 max_ang_vel   = 1.5,
-                 min_lin_vel   = 0.35):
+                 max_ang_vel   = 0.8,
+                 min_lin_vel   = 0.15):
 
         self.pkg_path = rospkg.RosPack().get_path('rl_path_follow')
+
+        def floatX(X):
+            return np.asarray(X, dtype=theano.config.floatX)
 
         self.nu = 0.0                                                                               # linear (forward) velocity.
         self.om = 0.0                                                                               # angular (turn) velocity.
@@ -67,77 +69,44 @@ class PathFollow:
 
         self.M = cv2.getPerspectiveTransform(np.float32(pts[0]), np.float32(pts[1]))
 
+        def init_weights(shape):
+            return theano.shared(floatX(np.random.randn(*shape)))
+
         if not record_data:
-            self.sess = tf.Session()
+            def cnn_model(X):
+                l_in        = InputLayer(input_var = X,
+                                         shape     = (None, 4800))
+
+                hidden_1    = DenseLayer(l_in,
+                                         num_units    = 800,
+                                         nonlinearity = tanh)
+
+                hidden_2    = DenseLayer(hidden_1,
+                                         num_units    = 200,
+                                         nonlinearity = tanh)
+
+                output      = DenseLayer(hidden_2,
+                                         num_units    = 1,
+                                         nonlinearity = tanh)
+
+                return output
+
+            self.X = T.fmatrix()
+            self.Y = T.fmatrix()
+
+            self.network_output = cnn_model(self.X)
 
             if load_model:
-                saver = tf.train.import_meta_graph(self.pkg_path + '/model/model-200.meta')
-                saver.restore(self.sess, tf.train.latest_checkpoint(self.pkg_path + '/model/'))
+                with np.load(self.pkg_path + '/model/model.npz') as f:
+                    param_values = [f['arr_%d' % i] for i in range(len(f.files))]
+                lasagne.layers.set_all_param_values(self.network_output, param_values)
 
-                graph = tf.get_default_graph()
+            self.output    = get_output(self.network_output)
 
-                op = self.sess.graph.get_operations()
-                
-                troubleshoot = True
-                if troubleshoot:
-                    for m in op:
-                        print m.values()
-
-                self.X      = graph.get_tensor_by_name('image_input:0')
-                self.Y      = graph.get_tensor_by_name('network_output:0')
-                self.output = graph.get_tensor_by_name('output/Tanh:0')
-
-            else:
-                self.X = tf.placeholder(tf.float32, [None, 60, 80, 1], name='image_input')
-                self.Y = tf.placeholder(tf.float32, [None, 1], name='network_output')
-
-                self.w_c1 = tf.Variable(tf.random_normal([filter_size_1,
-                                                          filter_size_1, 
-                                                          1, 
-                                                          n_filter_1]))
-
-                self.w_c2 = tf.Variable(tf.random_normal([filter_size_2, 
-                                                          filter_size_2, 
-                                                          n_filter_1, 
-                                                          n_filter_2]))
-
-                self.c1     = tf.nn.conv2d(self.X, 
-                                           self.w_c1, 
-                                           strides=[1,2,2,1], 
-                                           padding='VALID')
-
-                self.p1     = tf.nn.max_pool(self.c1, 
-                                             ksize=[1,2,2,1], 
-                                             strides=[1,2,2,1], 
-                                             padding='VALID')
-
-                self.c2     = tf.nn.conv2d(self.p1, 
-                                           self.w_c2, 
-                                           strides=[1,2,2,1], 
-                                           padding='VALID')
-
-                self.p2     = tf.nn.max_pool(self.c2, 
-                                             ksize=[1,2,2,1], 
-                                             strides=[1,2,2,1], 
-                                             padding='VALID')
-
-                self.f1     = tf.contrib.layers.flatten(self.p2)
-
-                self.h1     = tf.contrib.layers.fully_connected(self.f1, 
-                                                                n_hidden_1, 
-                                                                activation_fn=tf.tanh)
-     
-                self.h2     = tf.contrib.layers.fully_connected(self.h1, 
-                                                                n_hidden_2, 
-                                                                activation_fn=tf.tanh)
-
-                self.output = tf.to_float(tf.layers.dense(self.h2, 1, activation=tf.tanh, name='output'))
-
-            self.feed_dict = {self.X: self.input_image}
-
-            if not is_training:
-                self.init = tf.global_variables_initializer()
-                self.sess.run(self.init)
+            self.prediction = theano.function(inputs               = [self.X],
+                                              outputs              = self.output,
+                                              allow_input_downcast = True)
+             
 
 
     def rgb_cb(self, image):
@@ -173,18 +142,22 @@ class PathFollow:
         self.om = cmd.angular.z                                                                     # recorded angular velocity.
         
         if self.nu > self.min_lin_vel:
-            self.y = (self.min_lin_vel / self.max_ang_vel) * (self.om / self.nu)                    # path curvature. to be predicted by network. (OUTPUT)
+            self.y = (self.om / self.nu)                                                            # path curvature. to be predicted by network. (OUTPUT)
 
 
-    def set_velocity(self, 
+    def set_velocity(self,
                      linear_velocity = 0.0):
 
         output_twist = Twist()
 
-        network_output = (self.max_ang_vel / self.min_lin_vel) * self.sess.run(self.output, feed_dict=self.feed_dict)
+        network_output = 0.0
+
+        if self.input_image.shape == (1,60,80,1):
+            input_X = (self.input_image).reshape(1,4800)
+            network_output = self.prediction(input_X)
 
         output_twist.linear.x = linear_velocity
-        output_twist.angular.z = linear_velocity * network_output
+        output_twist.angular.z = network_output
 
         self.vel_pub.publish(output_twist)     
 
@@ -196,7 +169,7 @@ class PathFollow:
     def train_model(self,
                     lr         = 0.0001,
                     n_epochs   = 1000,
-                    batch_size = 16,
+                    batch_size = 128,
                     alpha      = 0.5):
 
         file_list = os.listdir(self.pkg_path + '/data/training_data')
@@ -209,28 +182,34 @@ class PathFollow:
             trX = data['images']
             trY = data['velocities']
 
-        trX = np.array(trX)
-        trY = np.array(trY)[:,2].reshape(-1,1)
+        trX = np.array(trX).reshape(-1,4800)
+        trY = np.array(trY)[:,1].reshape(-1,1)
 
         print trX.shape
         print trY.shape
 
-        l2 = tf.reduce_mean(tf.square(self.output - self.Y))
-        l1 = tf.reduce_mean(tf.abs(self.output - self.Y))
+        loss = squared_error(self.output,
+                             self.Y)
 
-        loss = alpha * l1 + (1.0 - alpha) * l2
+        loss = loss.mean()
 
-        optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(l2)
+        params = lasagne.layers.get_all_params(self.network_output, 
+                                               trainable=True)
 
-        self.init = tf.global_variables_initializer()
-        self.sess.run(self.init)
+        updates = nesterov_momentum(loss, 
+                                    params, 
+                                    learning_rate = lr,
+                                    momentum      = 0.9)
 
-        saver = tf.train.Saver()
+        train = theano.function(inputs=[self.X, self.Y], 
+                                outputs=loss, 
+                                updates=updates, 
+                                allow_input_downcast=True)
 
         for epoch in range(n_epochs):
             for start, end in zip(range(0, len(trX), batch_size), range(batch_size, len(trX), batch_size)):
-                self.sess.run(optimizer, feed_dict={self.X: trX[start:end], self.Y: trY[start:end]})
-            train_loss = self.sess.run(loss, feed_dict={self.X: trX, self.Y: trY})
+                train(trX[start:end], trY[start:end])
+            train_loss = np.mean(np.square(self.prediction(trX) - trY))
             print('epoch: %d, loss: %f' % (epoch, train_loss))
-                
-        saver.save(self.sess, self.pkg_path + '/model/model', global_step=n_epochs)
+        
+        np.savez(self.pkg_path + '/model/model.npz', *lasagne.layers.get_all_param_values(self.network_output))

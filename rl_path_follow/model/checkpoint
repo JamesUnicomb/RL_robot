@@ -1,2 +1,0 @@
-model_checkpoint_path: "/home/james/ROS_workspaces/rl_robot/src/rl_robot/rl_path_follow/model/model-2000"
-all_model_checkpoint_paths: "/home/james/ROS_workspaces/rl_robot/src/rl_robot/rl_path_follow/model/model-2000"

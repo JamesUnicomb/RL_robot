@@ -11,7 +11,6 @@ def main():
     rate = rospy.Rate(10)
 
     while not rospy.is_shutdown():
-        pf.set_velocity(0.45)
         rate.sleep()
 
 if __name__=='__main__':

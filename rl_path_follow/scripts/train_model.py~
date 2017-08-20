@@ -6,7 +6,7 @@ from rl_path_follow import PathFollow
 def main():
     pf = PathFollow(load_model = False, record_data = False)
 
-    pf.train_model(lr=0.001, n_epochs=200)
+    pf.train_model(lr=1e-5, n_epochs=10)
 
 if __name__=='__main__':
     main()

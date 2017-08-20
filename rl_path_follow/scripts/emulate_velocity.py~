@@ -3,6 +3,8 @@
 import rospy
 from rl_path_follow import PathFollow
 
+import tensorflow as tf
+
 def main():
     rospy.init_node('path_follow_test')
 
