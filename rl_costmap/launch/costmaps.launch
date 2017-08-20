@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find rl_robot)/launch/robot_laser.launch" />
+
+  <arg name="move_base_include" default="$(find rl_costmap)/launch/include/move_base.launch" />
+
+  <include file="$(arg move_base_include)" />
+</launch>
