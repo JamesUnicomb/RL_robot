@@ -8,3 +8,5 @@ global_costmap:
  width: 4.0
  height: 4.0
  resolution: 0.1
+ always_send_full_costmap: true
+ transform_tolerance: 0.5

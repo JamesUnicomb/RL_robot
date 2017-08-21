@@ -1,5 +1,5 @@
 <launch>
-  <node pkg="move_base" type="move_base" respawn="false" name="costmaps" output="screen">
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find rl_costmap)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find rl_costmap)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find rl_costmap)/params/local_costmap_params.yaml" command="load" />
