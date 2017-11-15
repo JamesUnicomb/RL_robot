@@ -1,5 +1,15 @@
-# rl_robot
-RL_Robot Base Code.
+# Personal Robot Platform
+The robot was built with the following:
+..* RPLidar A2
+..* iRobot Create 2
+..* UM7 IMU
+..* PrimeSense Camera
+..* Jetson TX2
+
+[![robot_image](https://github.com/JamesUnicomb/rl_robot/blob/master/robot_3.png) | width=100]
+
+
+## RL_Robot Base Code.
 
 ### rl_robot
 This puts the drivers of the robot into several launch files.
