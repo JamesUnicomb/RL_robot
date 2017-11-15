@@ -6,7 +6,7 @@ The robot was built with the following:
 * PrimeSense Camera
 * Jetson TX2
 
-![robot_image](https://github.com/JamesUnicomb/rl_robot/blob/master/robot_3.jpg | width=100)
+![](https://github.com/JamesUnicomb/rl_robot/blob/master/robot_3.jpg)
 
 
 ## RL_Robot Base Code.
