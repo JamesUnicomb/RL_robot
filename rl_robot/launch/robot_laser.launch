@@ -8,7 +8,7 @@
   <node pkg="tf" type="static_transform_publisher" name="imu_link_transform" args="0.0 0.0  0.0  0.0  0.0  0.0 /base_link /imu_link 30"/>
 
   <!-- run the create base -->
-  <include file="$(find rl_robot)/launch/include/create_2.launch" />
+  <include file="$(find ca_driver)/launch/create_2.launch" />
 
   <!-- run the robot ekf for filtered odometry -->
   <include file="$(find rl_robot)/launch/include/rl_robot_ekf.launch" />
